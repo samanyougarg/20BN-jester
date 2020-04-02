@@ -45,8 +45,11 @@ def main(args):
 
     #Joining together the needed paths
     path_vid = os.path.join(data_root, data_vid)
+    print("path_vid: " + path_vid)
     path_model = os.path.join(data_root, data_model, model_name)
+    print("path_model: " + path_model)
     path_labels = os.path.join(data_root, csv_labels)
+    print("path_labels: " + path_labels)
     path_train = os.path.join(data_root, csv_train)
     path_val = os.path.join(data_root, csv_val)
     path_test = os.path.join(data_root, csv_test)
