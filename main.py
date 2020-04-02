@@ -112,7 +112,7 @@ def main(args):
                         validation_steps=ceil(nb_sample_val/batch_size),
                         shuffle=True,
                         verbose=1,
-                        workers=workers,
+                        workers=0,
                         max_queue_size=max_queue_size,
                         use_multiprocessing=use_multiprocessing,
                         callbacks=[checkpointer_best, history_graph],
