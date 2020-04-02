@@ -92,6 +92,8 @@ def CNN3D_super_lite(inp_shape, nb_classes):
     model.add(keras.layers.Conv3D(128, 3, activation='relu', padding='same', name='conv4b'))
     model.add(keras.layers.MaxPooling3D(pool_size=(2,2,2), strides=(2,2,2), padding='valid', name='pool4'))
 
+    print(model.summary())
+
     model.add(keras.layers.Reshape((9,384)))
 
     model.add(keras.layers.Lambda(lambda x: K.l2_normalize(x,axis=-1)))
