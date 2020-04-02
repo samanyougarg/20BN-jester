@@ -1,6 +1,7 @@
 from keras.models import Model
 from keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D, Flatten, Dense, Dropout, Activation, BatchNormalization
 from keras import backend as K
+import keras
 
 #Model inspired from https://arxiv.org/pdf/1412.0767.pdf
 def CNN3D_dense(inp_shape, nb_classes, k_size=(3,3,3)):
