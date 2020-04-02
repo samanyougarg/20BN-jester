@@ -91,7 +91,7 @@ def main(args):
         #model_file_format_last = os.path.join(path_model,'model.{epoch:03d}.hdf5') 
         model_file_format_best = os.path.join(path_model,'model.best.hdf5') 
 
-        checkpointer_best = ModelCheckpoint(model_file_format_best, monitor='val_acc',verbose=1, save_best_only=True, mode='max')
+        checkpointer_best = ModelCheckpoint(model_file_format_best, monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
         #checkpointer_last = ModelCheckpoint(model_file_format_last, period=1)
 
         history_graph = HistoryGraph(model_path_name=os.path.join(path_model, "graphs"))
