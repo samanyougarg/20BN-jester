@@ -45,11 +45,8 @@ def main(args):
 
     #Joining together the needed paths
     path_vid = os.path.join(data_root, data_vid)
-    print("path_vid: " + path_vid)
     path_model = os.path.join(data_root, data_model, model_name)
-    print("path_model: " + path_model)
     path_labels = os.path.join(data_root, csv_labels)
-    print("path_labels: " + path_labels)
     path_train = os.path.join(data_root, csv_train)
     path_val = os.path.join(data_root, csv_val)
     path_test = os.path.join(data_root, csv_test)
@@ -80,11 +77,17 @@ def main(args):
                    metrics=["accuracy", "top_k_categorical_accuracy"]) 
         """
         
-        net = Resnet3DBuilder.build_resnet_101(inp_shape, nb_classes, drop_rate=0.5)
-        opti = SGD(lr=0.01, momentum=0.9, decay= 0.0001, nesterov=False)
-        net.compile(optimizer=opti,
-                    loss="categorical_crossentropy",
-                    metrics=["accuracy"]) 
+        # net = Resnet3DBuilder.build_resnet_101(inp_shape, nb_classes, drop_rate=0.5)
+        # opti = SGD(lr=0.01, momentum=0.9, decay= 0.0001, nesterov=False)
+        # net.compile(optimizer=opti,
+        #             loss="categorical_crossentropy",
+        #             metrics=["accuracy"]) 
+
+        net = model.CNN3D_super_lite(inp_shape=inp_shape,nb_classes=nb_classes)
+        #Compiling model 
+        net.compile(optimizer="adam",
+                   loss="categorical_crossentropy",
+                   metrics=["accuracy", "top_k_categorical_accuracy"]) 
 
         if(path_weights != "None"):
             print("Loading weights from : " + path_weights)
@@ -112,7 +115,7 @@ def main(args):
                         validation_steps=ceil(nb_sample_val/batch_size),
                         shuffle=True,
                         verbose=1,
-                        workers=0,
+                        workers=workers,
                         max_queue_size=max_queue_size,
                         use_multiprocessing=use_multiprocessing,
                         callbacks=[checkpointer_best, history_graph],
