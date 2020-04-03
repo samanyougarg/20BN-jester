@@ -100,7 +100,7 @@ def main(args):
         checkpointer_best = ModelCheckpoint(model_file_format_best, monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
         #checkpointer_last = ModelCheckpoint(model_file_format_last, period=1)
 
-        history_graph = HistoryGraph(model_path_name=os.path.join(path_model, "graphs"))
+        # history_graph = HistoryGraph(model_path_name=os.path.join(path_model, "graphs"))
 
         #Get the number of sample in the training and validation set
         nb_sample_train = data.train_df["video_id"].size
@@ -118,8 +118,17 @@ def main(args):
                         workers=workers,
                         max_queue_size=max_queue_size,
                         use_multiprocessing=use_multiprocessing,
-                        callbacks=[checkpointer_best, history_graph],
+                        callbacks=[checkpointer_best],
         )
+
+        # serialize model to JSON
+        model_json = net.to_json()
+        with open("radhakrishna.json", "w") as json_file:
+            json_file.write(model_json)
+        # serialize weights to HDF5
+        net.save_weights("radhakrishna.h5")
+        print("Saved model to disk")
+
     elif mode == 'test':
         data = DataLoader(path_vid, path_labels, path_test=path_test)
 
