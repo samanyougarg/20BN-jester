@@ -17,9 +17,7 @@ from tensorflow.keras.layers import (
     Activation,
     Dense,
     Flatten,
-    Dropout
-)
-from tensorflow.keras.layers.convolutional import (
+    Dropout,
     Conv3D,
     AveragePooling3D,
     MaxPooling3D
