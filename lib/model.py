@@ -1,3 +1,4 @@
+import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
      Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer
@@ -75,7 +76,7 @@ def CNN3D_lite(inp_shape, nb_classes):
     # From https://github.com/patrickjohncyh/ibm-waldo/blob/master/2-MachineLearning/server-training/Models.py
     """
 
-    model = Sequential()
+    model = tf.keras.Sequential()
 
     model.add(InputLayer(input_shape=inp_shape))
     model.add(Conv3D(32, 3,strides=(1,2,2), activation='relu', padding='same', name='conv1', input_shape=inp_shape))

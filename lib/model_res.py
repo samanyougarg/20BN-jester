@@ -26,7 +26,6 @@ from tensorflow.keras.layers import (
 )
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras import backend as K
-import tensorflow.keras.Sequential as Sequential
 
 
 def _bn_relu(input):
