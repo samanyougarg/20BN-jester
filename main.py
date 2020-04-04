@@ -95,7 +95,7 @@ def main(args):
 
     # launch the training 
     net.fit(
-                    generator=gen_train,
+                    x=gen_train,
                     steps_per_epoch=ceil(nb_sample_train/batch_size),
                     epochs=epochs,
                     validation_data=gen_val,
