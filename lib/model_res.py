@@ -22,7 +22,8 @@ from tensorflow.keras.layers import (
     AveragePooling3D,
     MaxPooling3D,
     Add,
-    BatchNormalization
+    BatchNormalization,
+    Sequential
 )
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras import backend as K
