@@ -1,9 +1,7 @@
-import tensorflow as tf
-
-from tf.keras.models import Model
-from tf.keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
      Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer
-from tf.keras import backend as K
+from tensorflow.keras import backend as K
 
 
 def CNN3D(inp_shape, nb_classes, k_size=(3,3,3), drop_rate=0):
