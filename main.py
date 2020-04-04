@@ -2,13 +2,11 @@ import argparse
 import configparser
 from ast import literal_eval
 
-import sys
 import os
 from math import ceil
 import numpy as np
 
 import lib.image as kmg
-from lib.custom_callbacks import HistoryGraph
 from lib.data_loader import DataLoader
 from lib.utils import mkdirs
 import lib.model as model
@@ -18,8 +16,7 @@ from keras.callbacks import ModelCheckpoint
 from keras.optimizers import SGD
 
 def main(args):
-    #Extracting the information from the configuration file
-    mode         = config.get('general', 'mode')
+    # extract information from the configuration file
     nb_frames    = config.getint('general', 'nb_frames')
     skip         = config.getint('general', 'skip')
     target_size  = literal_eval(config.get('general', 'target_size'))
@@ -43,7 +40,7 @@ def main(args):
     use_multiprocessing  = config.getboolean('option', 'use_multiprocessing')
     max_queue_size       = config.getint('option', 'max_queue_size')
 
-    #Joining together the needed paths
+    # join together the needed paths
     path_vid = os.path.join(data_root, data_vid)
     path_model = os.path.join(data_root, data_model, model_name)
     path_labels = os.path.join(data_root, csv_labels)
@@ -51,132 +48,78 @@ def main(args):
     path_val = os.path.join(data_root, csv_val)
     path_test = os.path.join(data_root, csv_test)
 
-    #Input shape of the input Tensor
-    #inp_shape = (None, None, None, 3)
+    # Input shape of the input Tensor
     inp_shape   = (nb_frames,) + target_size + (3,)
 
+    # load the data using DataLoader class
+    data = DataLoader(path_vid, path_labels, path_train, path_val)
+
+    # create model and graph folders
+    mkdirs(path_model, 0o755)
+
+    # create the generators for the training and validation set
+    gen = kmg.ImageDataGenerator()
+    gen_train = gen.flow_video_from_dataframe(data.train_df, path_vid, path_classes=path_labels, x_col='video_id', y_col="label", target_size=target_size, batch_size=batch_size, nb_frames=nb_frames, skip=skip, has_ext=True)
+    gen_val = gen.flow_video_from_dataframe(data.val_df, path_vid, path_classes=path_labels, x_col='video_id', y_col="label", target_size=target_size, batch_size=batch_size, nb_frames=nb_frames, skip=skip, has_ext=True)
     
-    if mode == 'train':
-        data = DataLoader(path_vid, path_labels, path_train, path_val)
+    # MODEL
 
-        #Creating the model and graph folder
-        mkdirs(path_model, 0o755)
-        mkdirs(os.path.join(path_model, "graphs"), 0o755)
+    # # Build and compile RESNET3D model
+    # net = Resnet3DBuilder.build_resnet_101(inp_shape, nb_classes, drop_rate=0.5)
+    # opti = SGD(lr=0.01, momentum=0.9, decay= 0.0001, nesterov=False)
+    # net.compile(optimizer=opti,
+    #             loss="categorical_crossentropy",
+    #             metrics=["accuracy"]) 
 
-        #Creating the generators for the training and validation set
-        gen = kmg.ImageDataGenerator()
-        gen_train = gen.flow_video_from_dataframe(data.train_df, path_vid, path_classes=path_labels, x_col='video_id', y_col="label", target_size=target_size, batch_size=batch_size, nb_frames=nb_frames, skip=skip, has_ext=True)
-        gen_val = gen.flow_video_from_dataframe(data.val_df, path_vid, path_classes=path_labels, x_col='video_id', y_col="label", target_size=target_size, batch_size=batch_size, nb_frames=nb_frames, skip=skip, has_ext=True)
-        
-        """
-        #Building model
-        net = model.CNN3D(inp_shape=inp_shape,nb_classes=nb_classes, drop_rate=0.5)
-        #Compiling model 
-        net.compile(optimizer="Adadelta",
-                   loss="categorical_crossentropy",
-                   metrics=["accuracy", "top_k_categorical_accuracy"]) 
-        """
-        
-        # net = Resnet3DBuilder.build_resnet_101(inp_shape, nb_classes, drop_rate=0.5)
-        # opti = SGD(lr=0.01, momentum=0.9, decay= 0.0001, nesterov=False)
-        # net.compile(optimizer=opti,
-        #             loss="categorical_crossentropy",
-        #             metrics=["accuracy"]) 
+    # Build and compile CNN3D Lite model
+    net = model.CNN3D_lite(inp_shape=inp_shape,nb_classes=nb_classes)
+    net.compile(optimizer="adam",
+                loss="categorical_crossentropy",
+                metrics=["accuracy", "top_k_categorical_accuracy"]) 
 
-        net = model.CNN3D_super_lite(inp_shape=inp_shape,nb_classes=nb_classes)
-        #Compiling model 
-        net.compile(optimizer="adam",
-                   loss="categorical_crossentropy",
-                   metrics=["accuracy", "top_k_categorical_accuracy"]) 
+    # if model weights file is present
+    # load the model weights
+    if(path_weights != "None"):
+        print("Loading weights from : " + path_weights)
+        net.load_weights(path_weights)
 
-        if(path_weights != "None"):
-            print("Loading weights from : " + path_weights)
-            net.load_weights(path_weights)
+    # file format for saving the best model
+    model_file_format_best = os.path.join(path_model,'model.best.hdf5') 
 
+    # checkpoint the best model
+    checkpointer_best = ModelCheckpoint(model_file_format_best, monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
 
-        #model_file_format_last = os.path.join(path_model,'model.{epoch:03d}.hdf5') 
-        model_file_format_best = os.path.join(path_model,'model.best.hdf5') 
+    # get the number of samples in the training and validation set
+    nb_sample_train = data.train_df["video_id"].size
+    nb_sample_val   = data.val_df["video_id"].size
 
-        checkpointer_best = ModelCheckpoint(model_file_format_best, monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
-        #checkpointer_last = ModelCheckpoint(model_file_format_last, period=1)
+    # launch the training 
+    net.fit_generator(
+                    generator=gen_train,
+                    steps_per_epoch=ceil(nb_sample_train/batch_size),
+                    epochs=epochs,
+                    validation_data=gen_val,
+                    validation_steps=ceil(nb_sample_val/batch_size),
+                    shuffle=True,
+                    verbose=1,
+                    workers=workers,
+                    max_queue_size=max_queue_size,
+                    use_multiprocessing=use_multiprocessing,
+                    callbacks=[checkpointer_best],
+    )
 
-        # history_graph = HistoryGraph(model_path_name=os.path.join(path_model, "graphs"))
-
-        #Get the number of sample in the training and validation set
-        nb_sample_train = data.train_df["video_id"].size
-        nb_sample_val   = data.val_df["video_id"].size
-
-        #Launch the training 
-        net.fit_generator(
-                        generator=gen_train,
-                        steps_per_epoch=ceil(nb_sample_train/batch_size),
-                        epochs=epochs,
-                        validation_data=gen_val,
-                        validation_steps=ceil(nb_sample_val/batch_size),
-                        shuffle=True,
-                        verbose=1,
-                        workers=workers,
-                        max_queue_size=max_queue_size,
-                        use_multiprocessing=use_multiprocessing,
-                        callbacks=[checkpointer_best],
-        )
-
-        # serialize model to JSON
-        model_json = net.to_json()
-        with open("radhakrishna.json", "w") as json_file:
-            json_file.write(model_json)
-        # serialize weights to HDF5
-        net.save_weights("radhakrishna.h5")
-        print("Saved model to disk")
-
-    elif mode == 'test':
-        data = DataLoader(path_vid, path_labels, path_test=path_test)
-
-        gen = kmg.ImageDataGenerator()
-        gen_test = gen.flow_video_from_dataframe(data.test_df, path_vid, shuffle=False, path_classes=path_labels, class_mode=None, x_col='video_id', target_size=target_size, batch_size=batch_size, nb_frames=nb_frames, skip=skip, has_ext=True)
-
-        #Building model
-        net = Resnet3DBuilder.build_resnet_101(inp_shape, nb_classes)      
-
-        if(path_weights != "None"):
-            print("Loading weights from : " + path_weights)
-            net.load_weights(path_weights)
-        else: 
-            sys.exit("<Error>: Specify a value for path_weights different from None when using test mode")
-
-        #Get the number of sample in the test set 
-        nb_sample_test = data.test_df["video_id"].size
- 
-        res = net.predict_generator(
-                        generator=gen_test,
-                        steps=ceil(nb_sample_test/batch_size),
-                        verbose=1,
-                        workers=workers,
-                        use_multiprocessing=use_multiprocessing,
-        )
-
-        #Create an empty column called label
-        data.test_df['label']=""
-
-        #For each result get the string label and set it in the DataFrame
-        for i, item in enumerate(res):
-            item[item == np.max(item)]=1
-            item[item != np.max(item)]=0
-            label=data.categorical_to_label(item)
-
-            #data.test_df.iloc[i,data.test_df.columns.get_loc('label')] = label
-            data.test_df.at[i,'label'] = label #Faster than iloc
-
-        #Save the resulting DataFrame to a csv
-        data.test_df.to_csv(os.path.join(path_model,"prediction.csv"), sep=';', header=False, index=False)
-    else:
-        sys.exit("<Error>: Use either {train,test} mode")
-
+    # after training serialize the final model to JSON
+    model_json = net.to_json()
+    with open("radhakrishna.json", "w") as json_file:
+        json_file.write(model_json)
+    # serialize weights to HDF5
+    net.save_weights("radhakrishna.h5")
+    print("Saved model to disk")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--config", dest="config", help="Configuration file used to run the script", required=True)
+    parser.add_argument("--config", dest="config", help="Configuration file to run the script", required=True)
     args = parser.parse_args()
 
     config = configparser.ConfigParser()
