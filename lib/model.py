@@ -1,7 +1,9 @@
-from keras.models import Model
-from keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D, Flatten, Dense, Dropout, Activation, BatchNormalization
-from keras import backend as K
-import keras
+import tensorflow as tf
+
+from tf.keras.models import Model
+from tf.keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
+     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer
+from tf.keras import backend as K
 
 
 def CNN3D(inp_shape, nb_classes, k_size=(3,3,3), drop_rate=0):
@@ -75,31 +77,31 @@ def CNN3D_lite(inp_shape, nb_classes):
     # From https://github.com/patrickjohncyh/ibm-waldo/blob/master/2-MachineLearning/server-training/Models.py
     """
 
-    model = keras.models.Sequential()
+    model = Sequential()
 
-    model.add(keras.layers.InputLayer(input_shape=inp_shape))
-    model.add(keras.layers.Conv3D(32, 3,strides=(1,2,2), activation='relu', padding='same', name='conv1', input_shape=inp_shape))
-    model.add(keras.layers.MaxPooling3D(pool_size=(1,2,2), strides=(1,2,2), padding='same', name='pool1'))
+    model.add(InputLayer(input_shape=inp_shape))
+    model.add(Conv3D(32, 3,strides=(1,2,2), activation='relu', padding='same', name='conv1', input_shape=inp_shape))
+    model.add(MaxPooling3D(pool_size=(1,2,2), strides=(1,2,2), padding='same', name='pool1'))
     
-    model.add(keras.layers.Conv3D(64, 3, activation='relu', padding='same', name='conv2'))
-    model.add(keras.layers.MaxPooling3D(pool_size=(2,2,2), strides=(2,2,2), padding='valid', name='pool2'))
+    model.add(Conv3D(64, 3, activation='relu', padding='same', name='conv2'))
+    model.add(MaxPooling3D(pool_size=(2,2,2), strides=(2,2,2), padding='valid', name='pool2'))
     
-    model.add(keras.layers.Conv3D(128, 3, activation='relu', padding='same', name='conv3a'))
-    model.add(keras.layers.Conv3D(128, 3, activation='relu', padding='same', name='conv3b'))
-    model.add(keras.layers.MaxPooling3D(pool_size=(3,2,2), strides=(2,2,2), padding='valid', name='pool3'))
+    model.add(Conv3D(128, 3, activation='relu', padding='same', name='conv3a'))
+    model.add(Conv3D(128, 3, activation='relu', padding='same', name='conv3b'))
+    model.add(MaxPooling3D(pool_size=(3,2,2), strides=(2,2,2), padding='valid', name='pool3'))
     
-    model.add(keras.layers.Conv3D(128, 3, activation='relu', padding='same', name='conv4a'))
-    model.add(keras.layers.Conv3D(128, 3, activation='relu', padding='same', name='conv4b'))
-    model.add(keras.layers.MaxPooling3D(pool_size=(2,2,2), strides=(2,2,2), padding='valid', name='pool4'))
+    model.add(Conv3D(128, 3, activation='relu', padding='same', name='conv4a'))
+    model.add(Conv3D(128, 3, activation='relu', padding='same', name='conv4b'))
+    model.add(MaxPooling3D(pool_size=(2,2,2), strides=(2,2,2), padding='valid', name='pool4'))
 
-    model.add(keras.layers.Reshape((2,384)))
+    model.add(Reshape((2,384)))
 
-    model.add(keras.layers.Lambda(lambda x: K.l2_normalize(x,axis=-1)))
-    model.add(keras.layers.LSTM(512, return_sequences=False,
+    model.add(Lambda(lambda x: K.l2_normalize(x,axis=-1)))
+    model.add(LSTM(512, return_sequences=False,
                    input_shape= (2,384),
                    dropout=0.5))
-    model.add(keras.layers.Dense(512, activation='relu'))
-    model.add(keras.layers.Dropout(0.5))
-    model.add(keras.layers.Dense(nb_classes, activation='softmax'))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(nb_classes, activation='softmax'))
 
     return model
