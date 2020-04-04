@@ -20,10 +20,10 @@ from tensorflow.keras.layers import (
     Dropout,
     Conv3D,
     AveragePooling3D,
-    MaxPooling3D
+    MaxPooling3D,
+    Add,
+    BatchNormalization
 )
-from tensorflow.keras.layers.merge import add
-from tensorflow.keras.layers.normalization import BatchNormalization
 from tensorflow.keras.regularizers import l2
 from tensorflow.keras import backend as K
 
@@ -95,7 +95,7 @@ def _shortcut3d(input, residual):
             kernel_initializer="he_normal", padding="valid",
             kernel_regularizer=l2(1e-4)
             )(input)
-    return add([shortcut, residual])
+    return Add([shortcut, residual])
 
 
 def _residual_block3d(block_function, filters, kernel_regularizer, repetitions,
