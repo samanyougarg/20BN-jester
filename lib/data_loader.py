@@ -19,7 +19,7 @@ class DataLoader():
         self.path_val    = path_val
         self.path_test   = path_test
 
-        self.get_labels(path_label s)
+        self.get_labels(path_labels)
 
         if self.path_train:
             self.train_df = self.load_video_labels(self.path_train)
