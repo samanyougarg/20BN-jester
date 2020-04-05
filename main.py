@@ -54,7 +54,7 @@ def main(args):
     # load the data using DataLoader class
     data = DataLoader(path_vid, path_labels, path_train, path_val)
 
-    # create model and graph folders
+    # create model folder
     mkdirs(path_model, 0o755)
 
     # create the generators for the training and validation set
@@ -72,7 +72,7 @@ def main(args):
     #             metrics=["accuracy"]) 
 
     # Build and compile CNN3D Lite model
-    net = model.CNN3D_lite(inp_shape=inp_shape,nb_classes=nb_classes)
+    net = model.CNN3D_lite(inp_shape=inp_shape, nb_classes=nb_classes)
     net.compile(optimizer="adam",
                 loss="categorical_crossentropy",
                 metrics=["accuracy", "top_k_categorical_accuracy"]) 
@@ -95,25 +95,25 @@ def main(args):
 
     # launch the training 
     net.fit(
-                    x=gen_train,
-                    steps_per_epoch=ceil(nb_sample_train/batch_size),
-                    epochs=epochs,
-                    validation_data=gen_val,
-                    validation_steps=ceil(nb_sample_val/batch_size),
-                    shuffle=True,
-                    verbose=1,
-                    workers=workers,
-                    max_queue_size=max_queue_size,
-                    use_multiprocessing=use_multiprocessing,
-                    callbacks=[checkpointer_best],
+            x=gen_train,
+            steps_per_epoch=ceil(nb_sample_train/batch_size),
+            epochs=epochs,
+            validation_data=gen_val,
+            validation_steps=ceil(nb_sample_val/batch_size),
+            shuffle=True,
+            verbose=1,
+            workers=workers,
+            max_queue_size=max_queue_size,
+            use_multiprocessing=use_multiprocessing,
+            callbacks=[checkpointer_best],
     )
 
     # after training serialize the final model to JSON
     model_json = net.to_json()
-    with open("radhakrishna.json", "w") as json_file:
+    with open("radhakrishna_all.json", "w") as json_file:
         json_file.write(model_json)
     # serialize weights to HDF5
-    net.save_weights("radhakrishna.h5")
+    net.save_weights("radhakrishna_all.h5")
     print("Saved model to disk")
 
 

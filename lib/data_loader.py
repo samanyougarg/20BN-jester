@@ -1,5 +1,7 @@
 import pandas as pd
 import numpy as np
+import lib.image as kmg
+
 
 class DataLoader():
     """ Class used to load csvs
@@ -74,3 +76,33 @@ class DataLoader():
             Returns a String that is the label of a video
         """
         return self.int_to_label[np.where(vector==1)[0][0]]
+
+
+class FrameQueue(object):
+    """ Class used to create a queue from video frames
+    # Arguments
+        nb_frames   : no of frames for each video
+        target_size : size of each frame
+    # Returns
+        A batch of frames as input for the model  
+    """
+    def __init__(self, nb_frames, target_size):
+        self.target_size = target_size
+        self.nb_frames = nb_frames
+
+        # create a new array of given shape, filled with zeros
+        # representing the batch of frames
+        self.batch = np.zeros((1, self.nb_frames) + target_size + (3,))
+
+    def img_in_queue(self, img):
+        # for i in (0, no_of_frames - 1) i.e. (0, 15)
+        for i in range(self.batch.shape[1] - 1):
+            self.batch[0, i] = self.batch[0, i+1]
+        # load image from array and resize it
+        img = kmg.load_img_from_array(img, target_size=self.target_size)
+        # convert the resized image to numpy array
+        x = kmg.img_to_array(img)
+        # normalize the image and add to batch
+        self.batch[0, self.batch.shape[1] - 1] = x / 255
+
+        return self.batch
