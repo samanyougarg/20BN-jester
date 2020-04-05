@@ -94,8 +94,8 @@ def main(args):
     nb_sample_val   = data.val_df["video_id"].size
 
     # launch the training 
-    net.fit(
-            x=gen_train,
+    net.fit_generator(
+            generator=gen_train,
             steps_per_epoch=ceil(nb_sample_train/batch_size),
             epochs=epochs,
             validation_data=gen_val,
