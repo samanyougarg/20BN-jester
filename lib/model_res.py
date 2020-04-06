@@ -97,7 +97,7 @@ def _shortcut3d(input, residual):
             kernel_initializer="he_normal", padding="valid",
             kernel_regularizer=l2(1e-4)
             )(input)
-    return Add([shortcut, residual])
+    return add([shortcut, residual])
 
 
 def _residual_block3d(block_function, filters, kernel_regularizer, repetitions,
