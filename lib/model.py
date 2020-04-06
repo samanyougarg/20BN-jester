@@ -135,7 +135,7 @@ def CNN3D_Jester(inp_shape, nb_classes):
     model.add(Conv3D(256, 3,strides=1, activation='relu', padding='same'))
     model.add(BatchNormalization())
 
-    mode.add(GlobalMaxPool3D())
+    model.add(GlobalMaxPool3D())
 
     model.add(LSTM(256))
     model.add(LSTM(256))
