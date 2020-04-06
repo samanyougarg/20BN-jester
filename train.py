@@ -34,7 +34,6 @@ def main(args):
     csv_labels   = config.get('path', 'csv_labels')
     csv_train    = config.get('path', 'csv_train')
     csv_val      = config.get('path', 'csv_val')
-    csv_test     = config.get('path', 'csv_test')
 
     workers              = config.getint('option', 'workers')
     use_multiprocessing  = config.getboolean('option', 'use_multiprocessing')
@@ -46,7 +45,6 @@ def main(args):
     path_labels = os.path.join(data_root, csv_labels)
     path_train = os.path.join(data_root, csv_train)
     path_val = os.path.join(data_root, csv_val)
-    path_test = os.path.join(data_root, csv_test)
 
     # Input shape of the input Tensor
     inp_shape   = (nb_frames,) + target_size + (3,)
@@ -64,14 +62,6 @@ def main(args):
     
     # MODEL
 
-    # Build and compile CNN3D model
-    net = model.CNN3D_Jester(inp_shape=inp_shape, nb_classes=nb_classes)
-    print(net.summary())
-    opti = SGD(lr=0.001)
-    net.compile(optimizer=opti,
-                loss="categorical_crossentropy",
-                metrics=["accuracy", "top_k_categorical_accuracy"]) 
-
     # # Build and compile RESNET3D model
     # net = Resnet3DBuilder.build_resnet_101(inp_shape, nb_classes, drop_rate=0.5)
     # opti = SGD(lr=0.01, momentum=0.9, decay= 0.0001, nesterov=False)
@@ -80,11 +70,10 @@ def main(args):
     #             metrics=["accuracy"]) 
 
     # Build and compile CNN3D Lite model
-    # net = model.CNN3D_lite(inp_shape=inp_shape, nb_classes=nb_classes)
-    # net.compile(optimizer="adam",
-    #             loss="categorical_crossentropy",
-    #             metrics=["accuracy", "top_k_categorical_accuracy"]) 
-
+    net = model.CNN3D_lite(inp_shape=inp_shape, nb_classes=nb_classes)
+    net.compile(optimizer="adam",
+                loss="categorical_crossentropy",
+                metrics=["accuracy", "top_k_categorical_accuracy"]) 
 
     # if model weights file is present
     # load the model weights
