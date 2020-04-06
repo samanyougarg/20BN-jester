@@ -137,11 +137,11 @@ def CNN3D_Jester(inp_shape, nb_classes):
 
     model.add(GlobalMaxPool3D())
 
-    model.add(LSTM(256))
-    model.add(LSTM(256))
+    # model.add(LSTM(256))
+    # model.add(LSTM(256))
   
-    model.add(Dense(256, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(nb_classes, activation='softmax'))
+    # model.add(Dense(256, activation='relu'))
+    # model.add(Dropout(0.5))
+    # model.add(Dense(nb_classes, activation='softmax'))
 
     return model

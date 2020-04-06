@@ -66,6 +66,7 @@ def main(args):
 
     # Build and compile CNN3D model
     net = model.CNN3D_Jester(inp_shape=inp_shape, nb_classes=nb_classes)
+    print(net.summary())
     opti = SGD(lr=0.001)
     net.compile(optimizer=opti,
                 loss="categorical_crossentropy",
