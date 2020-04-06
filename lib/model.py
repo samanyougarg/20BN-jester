@@ -1,7 +1,8 @@
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
-     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer
+     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer,\
+     GlobalMaxPool3D
 from tensorflow.keras import backend as K
 
 
@@ -100,6 +101,46 @@ def CNN3D_lite(inp_shape, nb_classes):
                    input_shape= (2,384),
                    dropout=0.5))
     model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(nb_classes, activation='softmax'))
+
+    return model
+
+
+def CNN3D_Jester(inp_shape, nb_classes):
+    """
+    # From http://openaccess.thecvf.com/content_ICCVW_2019/papers/HANDS/Materzynska_The_Jester_Dataset_A_Large-Scale_Video_Dataset_of_Human_Gestures_ICCVW_2019_paper.pdf
+    """
+
+    model = tf.keras.Sequential()
+
+    model.add(InputLayer(input_shape=inp_shape))
+
+    model.add(Conv3D(32, 3,strides=1, activation='relu', padding='same', input_shape=inp_shape))
+    model.add(BatchNormalization())
+    model.add(MaxPooling3D(pool_size=(1,2,2), padding='same'))
+
+    model.add(Conv3D(64, 3,strides=1, activation='relu', padding='same'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling3D(pool_size=(1,2,2), padding='same'))
+
+    model.add(Conv3D(128, 3,strides=1, activation='relu', padding='same'))
+    model.add(BatchNormalization())
+    model.add(MaxPooling3D(pool_size=(1,2,2), padding='same'))
+
+    model.add(Conv3D(256, 3,strides=1, activation='relu', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Conv3D(256, 3,strides=1, activation='relu', padding='same'))
+    model.add(BatchNormalization())
+    model.add(Conv3D(256, 3,strides=1, activation='relu', padding='same'))
+    model.add(BatchNormalization())
+
+    mode.add(GlobalMaxPool3D())
+
+    model.add(LSTM(256))
+    model.add(LSTM(256))
+  
+    model.add(Dense(256, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(nb_classes, activation='softmax'))
 

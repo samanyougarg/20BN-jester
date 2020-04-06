@@ -64,6 +64,13 @@ def main(args):
     
     # MODEL
 
+    # Build and compile CNN3D model
+    net = model.CNN3D_Jester(inp_shape=inp_shape, nb_classes=nb_classes)
+    opti = SGD(lr=0.001)
+    net.compile(optimizer=opti,
+                loss="categorical_crossentropy",
+                metrics=["accuracy", "top_k_categorical_accuracy"]) 
+
     # # Build and compile RESNET3D model
     # net = Resnet3DBuilder.build_resnet_101(inp_shape, nb_classes, drop_rate=0.5)
     # opti = SGD(lr=0.01, momentum=0.9, decay= 0.0001, nesterov=False)
@@ -72,10 +79,11 @@ def main(args):
     #             metrics=["accuracy"]) 
 
     # Build and compile CNN3D Lite model
-    net = model.CNN3D_lite(inp_shape=inp_shape, nb_classes=nb_classes)
-    net.compile(optimizer="adam",
-                loss="categorical_crossentropy",
-                metrics=["accuracy", "top_k_categorical_accuracy"]) 
+    # net = model.CNN3D_lite(inp_shape=inp_shape, nb_classes=nb_classes)
+    # net.compile(optimizer="adam",
+    #             loss="categorical_crossentropy",
+    #             metrics=["accuracy", "top_k_categorical_accuracy"]) 
+
 
     # if model weights file is present
     # load the model weights

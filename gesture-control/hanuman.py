@@ -9,7 +9,7 @@ import argparse
 import configparser
 from ast import literal_eval
 import errno
-from keras.models import model_from_json
+import tensorflow as tf
 
 BASE_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(BASE_PATH)
@@ -20,14 +20,14 @@ from lib.data_loader import FrameQueue
 # function to load the pretrained CNN model
 def load_model(model_json_path, model_weights_path):
     # read the model json file
-    json_file = open("../models/radhakrishna.json", 'r')
+    json_file = open(model_json_path, 'r')
     loaded_model_json = json_file.read()
     json_file.close()
 
     # load the model from json file
-    model = model_from_json(loaded_model_json)
+    model = tf.keras.models.model_from_json(loaded_model_json)
     # load weights into new model
-    model.load_weights("../models/radhakrishna.h5")
+    model.load_weights(model_weights_path)
 
     print("Loaded CNN model from disk")
 
