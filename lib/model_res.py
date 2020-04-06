@@ -11,21 +11,23 @@ from __future__ import (
     unicode_literals
 )
 import six
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import (
+from keras.models import Model
+from keras.layers import (
     Input,
     Activation,
     Dense,
     Flatten,
-    Dropout,
+    Dropout
+)
+from keras.layers.convolutional import (
     Conv3D,
     AveragePooling3D,
-    MaxPooling3D,
-    Add,
-    BatchNormalization
+    MaxPooling3D
 )
-from tensorflow.keras.regularizers import l2
-from tensorflow.keras import backend as K
+from keras.layers.merge import add
+from keras.layers.normalization import BatchNormalization
+from keras.regularizers import l2
+from keras import backend as K
 
 
 def _bn_relu(input):
