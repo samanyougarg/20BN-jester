@@ -136,7 +136,7 @@ def CNN3D_lite(inp_shape, nb_classes):
 
 #     return model
 
-def recurrent_mobilenet(input_shape=(64, 96), sequence_size=16, alpha=0.75, nb_classes):
+def recurrent_mobilenet(nb_classes, input_shape=(64, 96), sequence_size=16, alpha=0.75):
 	encoder_input = Input(shape=input_shape)
 	encoder = MobileNet(input_tensor=encoder_input, alpha=alpha, include_top=False, pooling='avg', weights='imagenet')
 	encoder_model = Model(inputs=encoder_input, outputs=encoder.output, name='mobilenet_shared')
