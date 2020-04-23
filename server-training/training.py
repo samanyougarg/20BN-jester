@@ -10,7 +10,7 @@ from keras.models import load_model
 
 
 from utils.Generator import DataGeneratorIA
-from Models import c3d_super_lite
+from Models import c3d_super_lite, mobilenetonly
 
 # Load Training Labels
 df_jest = pd.read_csv( 'jester-train-six-actions.csv',
@@ -43,7 +43,7 @@ integer_encoded = label_encoder.fit_transform(dfval['Action'])
 dfval['Action'] = integer_encoded
 
 # Load Model
-model = c3d_super_lite()
+model = mobilenetonly()
 
 # Fit Model
 model.fit_generator(
