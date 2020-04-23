@@ -114,8 +114,8 @@ def CNN3D_lite(inp_shape, nb_classes):
     return model
 
 
-def mobilenetonly(nb_classes):
-    dim = (64, 96)
+def mobilenetonly(nb_classes, target_size):
+    # dim = (224, 224)
     n_sequence = 16
     n_channels = 3
     
@@ -123,7 +123,7 @@ def mobilenetonly(nb_classes):
     model.add( 
             TimeDistributed(
                 MobileNetV2(weights='imagenet',include_top=False),
-                input_shape=(n_sequence, *dim, n_channels) # 5 images...
+                input_shape=(n_sequence, *target_size, n_channels) # 5 images...
             )
         )
     model.add(
