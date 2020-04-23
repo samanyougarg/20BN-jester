@@ -3,6 +3,7 @@ from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
      Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer
 from tensorflow.keras import backend as K
+from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
 
 
 def CNN3D(inp_shape, nb_classes, k_size=(3,3,3), drop_rate=0):
