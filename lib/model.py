@@ -115,10 +115,9 @@ def CNN3D_lite(inp_shape, nb_classes):
 
 
 def mobilenetonly(nb_classes):
-    dim = (224, 224)
+    dim = (64, 96)
     n_sequence = 16
     n_channels = 3
-    alpha = 'MobileNetV2'
     
     model = Sequential()
     model.add( 
