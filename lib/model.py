@@ -123,7 +123,7 @@ def mobilenetonly(nb_classes):
     model = Sequential()
     model.add( 
             TimeDistributed(
-                MobileNetV2(weights='imagenet',include_top=False, alpha= alpha),
+                MobileNetV2(weights='imagenet',include_top=False),
                 input_shape=(n_sequence, *dim, n_channels) # 5 images...
             )
         )
