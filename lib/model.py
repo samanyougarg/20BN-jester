@@ -115,9 +115,12 @@ def CNN3D_lite(inp_shape, nb_classes):
 
 
 def mobilenetonly(nb_classes):
-    model = MobileNetV2(weights ='imagenet', include_top = False, input_tensor=Input(shape=(64, 96, 3)))
+    baseModel = MobileNetV2(weights ='imagenet', include_top = False, input_tensor=Input(shape=(64, 96, 3)))
 
-    print(model.summary())
+    print(baseModel.summary())
+
+    model = Sequential()
+    model.add(baseModel)
 
     model.add(Reshape((2,384)))
 
@@ -128,5 +131,7 @@ def mobilenetonly(nb_classes):
     model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(nb_classes, activation='softmax'))
+
+    print(model.summary())
 
     return model
