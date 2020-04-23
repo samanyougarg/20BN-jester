@@ -115,7 +115,7 @@ def CNN3D_lite(inp_shape, nb_classes):
 
 
 def mobilenetonly(nb_classes):
-    baseModel = MobileNetV2(weights ='imagenet', include_top = False, input_tensor=Input(shape=(64, 96, 3)))
+    baseModel = MobileNetV2(weights ='imagenet', include_top = False, input_shape=(64, 96, 3))
 
     print(baseModel.summary())
 
