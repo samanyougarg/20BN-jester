@@ -30,7 +30,7 @@ df['Frames'] = 0
 pbar = tqdm(total=df.shape[0])
 for idx,row in df.iterrows():
 	v = row[0]
-	path = os.path.join('jester-data','20bn-jester-v1',str(v))
+	path = '/home/ubuntu/gesture-recognition/20bn-jester-v1'
 	num_files = len(os.listdir(path))
 	df.at[idx,'Frames'] = num_files
 	pbar.update(1)

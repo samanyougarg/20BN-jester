@@ -25,7 +25,7 @@ video_folders = df['Folder']
 
 pbar = tqdm(total=video_folders.size)
 for idx,f in video_folders.iteritems():
-	path = os.path.join('jester-data','20bn-jester-v1',str(f))
+	path = '/home/ubuntu/gesture-recognition/20bn-jester-v1'
 	files = np.sort(np.array([os.path.splitext(filename)[0] for filename in os.listdir(path)]))
 	save_path = os.path.join('jester-data','jester-features',str(f)+'-'+'features-mobilenet')
 	seq = []
