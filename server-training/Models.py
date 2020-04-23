@@ -14,6 +14,8 @@ from keras.layers import LeakyReLU,ReLU,Lambda
 from keras.optimizers import Adam,SGD
 from keras.layers import LSTM,CuDNNLSTM
 from keras.regularizers import l2
+from keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
+     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed, concatenate
 
 from keras.applications.mobilenet_v2 import MobileNetV2
 
@@ -132,3 +134,62 @@ def mobilenetonly():
     model.compile(loss='categorical_crossentropy', optimizer=Adam(), metrics=['accuracy'])
     return model
 
+
+def lrcn():
+    """Build a CNN into RNN.
+    Starting version from:
+        https://github.com/udacity/self-driving-car/blob/master/
+            steering-models/community-models/chauffeur/models.py
+    Heavily influenced by VGG-16:
+        https://arxiv.org/abs/1409.1556
+    Also known as an LRCN:
+        https://arxiv.org/pdf/1411.4389.pdf
+    """
+
+    shape = (30,112,112,3)
+
+    model = Sequential()
+
+    model.add(InputLayer(input_shape=shape))
+
+    model.add(TimeDistributed(Conv2D(32, (7, 7), strides=(2, 2),
+        activation='relu', padding='same')))
+    model.add(TimeDistributed(Conv2D(32, (3,3),
+        kernel_initializer="he_normal", activation='relu')))
+    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
+
+    model.add(TimeDistributed(Conv2D(64, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(Conv2D(64, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
+
+    model.add(TimeDistributed(Conv2D(128, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(Conv2D(128, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
+
+    model.add(TimeDistributed(Conv2D(256, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(Conv2D(256, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
+
+    model.add(TimeDistributed(Conv2D(512, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(Conv2D(512, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
+
+    model.add(TimeDistributed(Flatten()))
+
+    model.add(Dropout(0.5))
+    model.add(LSTM(256, return_sequences=False, dropout=0.5))
+    model.add(Dense(5, activation='softmax'))
+
+    model.compile(loss='categorical_crossentropy',
+                  optimizer='adam',
+                  metrics=['accuracy'])
+
+    return model

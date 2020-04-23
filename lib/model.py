@@ -9,6 +9,8 @@ from keras import Sequential
 from keras.models import Model
 from keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
      Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed, concatenate
+from keras.layers.wrappers import TimeDistributed
+from keras.layers.convolutional import (Conv2D, MaxPooling2D)
 from keras import backend as K
 from keras.applications.mobilenet_v2 import MobileNetV2
 from keras.applications.mobilenet import MobileNet
