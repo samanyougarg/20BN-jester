@@ -114,24 +114,46 @@ def CNN3D_lite(inp_shape, nb_classes):
     return model
 
 
-def mobilenetonly(nb_classes):
-    baseModel = MobileNetV2(weights ='imagenet', include_top = False, input_shape=(64, 96, 3))
+# def mobilenetonly(nb_classes):
+#     baseModel = MobileNetV2(weights ='imagenet', include_top = False, input_shape=(64, 96, 3))
 
-    print(baseModel.summary())
+#     print(baseModel.summary())
 
-    model = Sequential()
-    model.add(baseModel)
+#     model = Sequential()
+#     model.add(baseModel)
 
-    model.add(Reshape((20,384)))
+#     model.add(Reshape((20,384)))
 
-    model.add(Lambda(lambda x: K.l2_normalize(x,axis=-1)))
-    model.add(LSTM(512, return_sequences=False,
-                   input_shape= (2,384),
-                   dropout=0.5))
-    model.add(Dense(512, activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(nb_classes, activation='softmax'))
+#     model.add(Lambda(lambda x: K.l2_normalize(x,axis=-1)))
+#     model.add(LSTM(512, return_sequences=False,
+#                    input_shape= (2,384),
+#                    dropout=0.5))
+#     model.add(Dense(512, activation='relu'))
+#     model.add(Dropout(0.5))
+#     model.add(Dense(nb_classes, activation='softmax'))
 
-    print(model.summary())
+#     print(model.summary())
 
-    return model
+#     return model
+
+def recurrent_mobilenet(input_shape=(64, 96), sequence_size=16, alpha=0.75, nb_classes):
+	encoder_input = Input(shape=input_shape)
+	encoder = MobileNet(input_tensor=encoder_input, alpha=alpha, include_top=False, pooling='avg', weights='imagenet')
+	encoder_model = Model(inputs=encoder_input, outputs=encoder.output, name='mobilenet_shared')
+
+	for layer in encoder.layers:
+		layer.trainable = False
+
+	sequence_input = Input(shape=[sequence_size] + list(input_shape))
+	encoded_image_sequence = TimeDistributed(encoder_model)(sequence_input)
+	encoded_video = LSTM(128)(encoded_image_sequence)
+
+	x = BatchNormalization()(encoded_video)
+	x = Dropout(0.4)(x)
+	x = Dense(32)(x)
+	x = BatchNormalization()(x)
+	x = Activation('relu')(x)
+	output = Dense(nb_classes, activation="softmax")(x)
+
+	model = Model(inputs=sequence_input, outputs=output, name='optical_flow_recurrent')
+	return model
