@@ -15,7 +15,6 @@ from keras import backend as K
 from keras.applications.mobilenet_v2 import MobileNetV2
 from keras.applications.mobilenet import MobileNet
 
-K.clear_session()
 
 def CNN3D(inp_shape, nb_classes, k_size=(3,3,3), drop_rate=0):
     NB_AXIS = 1
