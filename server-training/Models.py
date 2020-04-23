@@ -52,7 +52,7 @@ def c3d_super_lite():
                    dropout=0.5))
     model.add(keras.layers.Dense(512, activation='relu'))
     model.add(keras.layers.Dropout(0.5))
-    model.add(keras.layers.Dense(6, activation='softmax'))
+    model.add(keras.layers.Dense(5, activation='softmax'))
 
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
