@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
-     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer
+     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed
 from tensorflow.keras import backend as K
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
 
@@ -108,8 +108,27 @@ def CNN3D_lite(inp_shape, nb_classes):
 
 
 def mobilenetonly(nb_classes):
-    model = MobileNetV2( weights ='imagenet', include_top = True)
-    model = Model(inputs = model.input, outputs = model.get_layer('global_average_pooling2d_1').output )
+    dim = (224, 224)
+    n_sequence = 16
+    n_channels = 3
+    
+    model = Sequential()
+    model.add( 
+            TimeDistributed(
+                MobileNetV2(weights='imagenet',include_top=False, alpha= alpha),
+                input_shape=(n_sequence, *dim, n_channels) # 5 images...
+            )
+        )
+    model.add(
+        TimeDistributed(
+            GlobalAveragePooling2D() # Or Flatten()
+        )
+    )
+    model.add(
+        CuDNNLSTM(64, return_sequences=False)
+    )
+    model.add(Dense(24, activation='relu'))
+    model.add(Dropout(.4))
     model.add(Dense(nb_classes, activation='softmax'))
 
     return model
