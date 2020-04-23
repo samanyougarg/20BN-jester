@@ -70,10 +70,15 @@ def main(args):
     #             metrics=["accuracy"]) 
 
     # Build and compile CNN3D Lite model
-    net = model.CNN3D_lite(inp_shape=inp_shape, nb_classes=nb_classes)
+    # net = model.CNN3D_lite(inp_shape=inp_shape, nb_classes=nb_classes)
+    # net.compile(optimizer="adam",
+    #             loss="categorical_crossentropy",
+    #             metrics=["accuracy", "top_k_categorical_accuracy"]) 
+
+    net = model.mobilenetonly(nb_classes=nb_classes)
     net.compile(optimizer="adam",
                 loss="categorical_crossentropy",
-                metrics=["accuracy", "top_k_categorical_accuracy"]) 
+                metrics=["accuracy"]) 
 
     # if model weights file is present
     # load the model weights

@@ -104,3 +104,11 @@ def CNN3D_lite(inp_shape, nb_classes):
     model.add(Dense(nb_classes, activation='softmax'))
 
     return model
+
+
+def mobilenetonly(nb_classes):
+    model = MobileNetV2( weights ='imagenet', include_top = True)
+    model = Model(inputs = model.input, outputs = model.get_layer('global_average_pooling2d_1').output )
+    model.add(Dense(nb_classes, activation='softmax'))
+
+    return model
