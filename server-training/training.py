@@ -21,7 +21,7 @@ df_jest = pd.read_csv( 'jester-train-six-actions.csv',
 
 df_jest = df_jest[(df_jest['Frames']>=30)]
 df_jest = df_jest.drop(columns='Frames')
-df_jest.loc[:,'Path'] = '/home/ubuntu/gesture-recognition/20bn-jester-v1'
+df_jest.loc[:,'Path'] = '/home/samygarg/hanuman/20bn-jester-v1'
 
 
 # Training Split: 80% Training , 20% Validation
