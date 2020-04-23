@@ -75,7 +75,7 @@ def main(args):
     #             loss="categorical_crossentropy",
     #             metrics=["accuracy", "top_k_categorical_accuracy"]) 
 
-    net = model.recurrent_mobilenet(nb_classes=nb_classes)
+    net = model.lrcn(inp_shape=inp_shape, nb_classes=nb_classes)
     net.compile(optimizer="adam",
                 loss="categorical_crossentropy",
                 metrics=["accuracy"]) 

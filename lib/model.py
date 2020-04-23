@@ -137,24 +137,54 @@ def CNN3D_lite(inp_shape, nb_classes):
 
 #     return model
 
-def recurrent_mobilenet(nb_classes, input_shape=(64, 96), sequence_size=16, alpha=0.75):
-	encoder_input = Input(shape=input_shape)
-	encoder = MobileNet(input_tensor=encoder_input, alpha=alpha, include_top=False, pooling='avg', weights='imagenet')
-	encoder_model = Model(inputs=encoder_input, outputs=encoder.output, name='mobilenet_shared')
+def lrcn(inp_shape, nb_classes):
+    """Build a CNN into RNN.
+    Starting version from:
+        https://github.com/udacity/self-driving-car/blob/master/
+            steering-models/community-models/chauffeur/models.py
+    Heavily influenced by VGG-16:
+        https://arxiv.org/abs/1409.1556
+    Also known as an LRCN:
+        https://arxiv.org/pdf/1411.4389.pdf
+    """
+    model = Sequential()
 
-	for layer in encoder.layers:
-		layer.trainable = False
+    model.add(InputLayer(input_shape=inp_shape))
 
-	sequence_input = Input(shape=[sequence_size] + list(input_shape))
-	encoded_image_sequence = TimeDistributed(encoder_model)(sequence_input)
-	encoded_video = LSTM(128)(encoded_image_sequence)
+    model.add(TimeDistributed(Conv2D(32, (7, 7), strides=(2, 2),
+        activation='relu', padding='same')))
+    model.add(TimeDistributed(Conv2D(32, (3,3),
+        kernel_initializer="he_normal", activation='relu')))
+    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
 
-	x = BatchNormalization()(encoded_video)
-	x = Dropout(0.4)(x)
-	x = Dense(32)(x)
-	x = BatchNormalization()(x)
-	x = Activation('relu')(x)
-	output = Dense(nb_classes, activation="softmax")(x)
+    model.add(TimeDistributed(Conv2D(64, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(Conv2D(64, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
 
-	model = Model(inputs=sequence_input, outputs=output, name='optical_flow_recurrent')
-	return model
+    model.add(TimeDistributed(Conv2D(128, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(Conv2D(128, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
+
+    model.add(TimeDistributed(Conv2D(256, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(Conv2D(256, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
+
+    model.add(TimeDistributed(Conv2D(512, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(Conv2D(512, (3,3),
+        padding='same', activation='relu')))
+    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
+
+    model.add(TimeDistributed(Flatten()))
+
+    model.add(Dropout(0.5))
+    model.add(LSTM(256, return_sequences=False, dropout=0.5))
+    model.add(Dense(nb_classes, activation='softmax'))
+
+    return model
