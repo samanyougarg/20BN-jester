@@ -122,7 +122,7 @@ def mobilenetonly(nb_classes):
     model = Sequential()
     model.add(baseModel)
 
-    model.add(Reshape((2,384)))
+    model.add(Reshape((10,384)))
 
     model.add(Lambda(lambda x: K.l2_normalize(x,axis=-1)))
     model.add(LSTM(512, return_sequences=False,
