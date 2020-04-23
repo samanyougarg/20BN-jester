@@ -19,11 +19,8 @@ def main(args):
     # extract information from the configuration file
     nb_frames    = config.getint('general', 'nb_frames')
     skip         = config.getint('general', 'skip')
-    # target_size  = literal_eval(config.get('general', 'target_size'))
-    target_size = (64, 96)
-
-    # batch_size   = config.getint('general', 'batch_size')
-    batch_size = 64
+    target_size  = literal_eval(config.get('general', 'target_size'))
+    batch_size   = config.getint('general', 'batch_size')
     epochs       = config.getint('general', 'epochs')
     nb_classes   = config.getint('general', 'nb_classes')
 
@@ -78,7 +75,7 @@ def main(args):
     #             loss="categorical_crossentropy",
     #             metrics=["accuracy", "top_k_categorical_accuracy"]) 
 
-    net = model.create_2stream_model(dim=(64,96) ,n_sequence = 16, n_channels = 3, n_output = 6, n_joint = 36)
+    net = model.mobilenetonly(nb_classes=nb_classes)
     net.compile(optimizer="adam",
                 loss="categorical_crossentropy",
                 metrics=["accuracy"]) 

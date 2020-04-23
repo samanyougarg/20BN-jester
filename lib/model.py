@@ -114,51 +114,19 @@ def CNN3D_lite(inp_shape, nb_classes):
     return model
 
 
-def mobilenetonly(nb_classes, target_size):
-    # dim = (224, 224)
-    n_sequence = 16
-    n_channels = 3
-    
-    model = Sequential()
-    model.add( 
-            TimeDistributed(
-                MobileNetV2(weights='imagenet',include_top=False),
-                input_shape=(n_sequence, *target_size, n_channels) # 5 images...
-            )
-        )
-    model.add(
-        TimeDistributed(
-            GlobalAveragePooling2D() # Or Flatten()
-        )
-    )
-    model.add(
-        CuDNNLSTM(64, return_sequences=False)
-    )
-    model.add(Dense(24, activation='relu'))
-    model.add(Dropout(.4))
+def mobilenetonly(nb_classes):
+    model = MobileNetV2(weights ='imagenet', include_top = False, input_tensor=Input(shape=(64, 96, 3)))
+
+    print(model.summary())
+
+    model.add(Reshape((2,384)))
+
+    model.add(Lambda(lambda x: K.l2_normalize(x,axis=-1)))
+    model.add(LSTM(512, return_sequences=False,
+                   input_shape= (2,384),
+                   dropout=0.5))
+    model.add(Dense(512, activation='relu'))
+    model.add(Dropout(0.5))
     model.add(Dense(nb_classes, activation='softmax'))
-
-    return model
-
-
-def create_2stream_model(dim, n_sequence, n_channels, n_joint, n_output):
-
-    rgb_stream = Input(shape=(n_sequence, *dim, n_channels), name='rgb_stream')     
-    skeleton_stream = Input(shape=(n_sequence, n_joint*3 ), name='skleton_stream')
-
-    mobileNet = TimeDistributed(MobileNetV2(weights='imagenet',include_top=False)) (rgb_stream)    
-    rgb_feature = TimeDistributed(GlobalAveragePooling2D()) (mobileNet)
-
-    rgb_lstm = CuDNNLSTM(64, return_sequences=False)(rgb_feature)
-    skeleton_lstm = CuDNNLSTM(64, return_sequences=False)(skeleton_stream)
-
-    combine = concatenate([rgb_lstm, skeleton_lstm])
-
-    fc_1 = Dense(units=64, activation='relu')(combine)
-    fc_1 = Dropout(0.5)(fc_1)
-    fc_2 = Dense(units=24, activation='relu')(fc_1)
-    fc_2 = Dropout(0.3)(fc_2)
-    fc_3 = Dense(units=n_output, activation='softmax', use_bias=True, name='main_output')(fc_2)
-    model = Model(inputs=[rgb_stream,skeleton_stream], outputs=fc_3)
 
     return model
