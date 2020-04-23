@@ -13,7 +13,7 @@ import lib.model as model
 from lib.model_res import Resnet3DBuilder
 
 from keras.callbacks import ModelCheckpoint
-from keras.optimizers import SGD
+from keras.optimizers import SGD, Adam
 
 def main(args):
     # extract information from the configuration file
