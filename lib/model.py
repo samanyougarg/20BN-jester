@@ -118,6 +118,7 @@ def mobilenetonly(nb_classes):
     dim = (224, 224)
     n_sequence = 16
     n_channels = 3
+    alpha = 'MobileNetV2'
     
     model = Sequential()
     model.add( 
