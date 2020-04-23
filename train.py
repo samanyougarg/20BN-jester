@@ -47,7 +47,7 @@ def main(args):
     path_val = os.path.join(data_root, csv_val)
 
     # Input shape of the input Tensor
-    inp_shape   = (nb_frames,) + target_size + (3,)
+    inp_shape   = (nb_frames,) + target_size + (2,)
 
     # load the data using DataLoader class
     data = DataLoader(path_vid, path_labels, path_train, path_val)
