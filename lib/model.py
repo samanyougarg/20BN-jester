@@ -8,7 +8,7 @@
 from keras import Sequential
 from keras.models import Model
 from keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
-     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed
+     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed, concatenate
 from keras import backend as K
 from keras.applications.mobilenet_v2 import MobileNetV2
 
@@ -137,5 +137,28 @@ def mobilenetonly(nb_classes, target_size):
     model.add(Dense(24, activation='relu'))
     model.add(Dropout(.4))
     model.add(Dense(nb_classes, activation='softmax'))
+
+    return model
+
+
+def create_2stream_model(dim, n_sequence, n_channels, n_joint, n_output):
+
+    rgb_stream = Input(shape=(n_sequence, *dim, n_channels), name='rgb_stream')     
+    skeleton_stream = Input(shape=(n_sequence, n_joint*3 ), name='skleton_stream')
+
+    mobileNet = TimeDistributed(MobileNetV2(weights='imagenet',include_top=False)) (rgb_stream)    
+    rgb_feature = TimeDistributed(GlobalAveragePooling2D()) (mobileNet)
+
+    rgb_lstm = CuDNNLSTM(64, return_sequences=False)(rgb_feature)
+    skeleton_lstm = CuDNNLSTM(64, return_sequences=False)(skeleton_stream)
+
+    combine = concatenate([rgb_lstm, skeleton_lstm])
+
+    fc_1 = Dense(units=64, activation='relu')(combine)
+    fc_1 = Dropout(0.5)(fc_1)
+    fc_2 = Dense(units=24, activation='relu')(fc_1)
+    fc_2 = Dropout(0.3)(fc_2)
+    fc_3 = Dense(units=n_output, activation='softmax', use_bias=True, name='main_output')(fc_2)
+    model = Model(inputs=[rgb_stream,skeleton_stream], outputs=fc_3)
 
     return model
