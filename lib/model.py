@@ -149,6 +149,7 @@ def lrcn(inp_shape, nb_classes):
     Also known as an LRCN:
         https://arxiv.org/pdf/1411.4389.pdf
     """
+    print(inp_shape)
     model = Sequential()
 
     model.add(InputLayer(input_shape=inp_shape))
@@ -188,5 +189,7 @@ def lrcn(inp_shape, nb_classes):
     model.add(Dropout(0.5))
     model.add(LSTM(256, return_sequences=False, dropout=0.5))
     model.add(Dense(nb_classes, activation='softmax'))
+
+    print(model.summary())
 
     return model

@@ -15,8 +15,9 @@ from keras.optimizers import Adam,SGD
 from keras.layers import LSTM,CuDNNLSTM
 from keras.regularizers import l2
 from keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
-     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed, concatenate
-
+     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, concatenate
+from keras.layers.wrappers import TimeDistributed
+from keras.layers.convolutional import (Conv2D, MaxPooling2D)
 from keras.applications.mobilenet_v2 import MobileNetV2
 
 def c3d_super_lite():
