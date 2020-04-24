@@ -137,7 +137,7 @@ model.add(recurrent)
 model.compile(loss='categorical_crossentropy', optimizer=RMSprop(learning_rate=1e-4, rho=0.9), metrics=["acc"])
 
 filepath="/home/samygarg/hanuman/model/weights-improvement-{epoch:03d}-{val_acc:.6f}.hdf5"
-checkpoint = ModelCheckpoint(filepath, monitor="val_acc", verbose=1)
+checkpoint = ModelCheckpoint(filepath, monitor="val_accuracy", verbose=1)
 callbacks_list = [checkpoint]
 
 history = model.fit_generator(train_generator, initial_epoch=0, epochs=10, validation_data=test_generator, callbacks=callbacks_list)
