@@ -75,13 +75,10 @@ def main(args):
     #             loss="categorical_crossentropy",
     #             metrics=["accuracy", "top_k_categorical_accuracy"]) 
 
-    net = model.lrcn(inp_shape=inp_shape, nb_classes=nb_classes)
-    # net.compile(optimizer="adam",
-    #             loss="categorical_crossentropy",
-    #             metrics=["accuracy"]) 
-    optimizer = Adam(lr=1e-5, decay=1e-6)
-    net.compile(loss='categorical_crossentropy', optimizer=optimizer,
-                           metrics=["accuracy"])
+    net = model.mobilenetonly()
+    net.compile(optimizer="adam",
+                loss="categorical_crossentropy",
+                metrics=["accuracy"]) 
 
     # if model weights file is present
     # load the model weights

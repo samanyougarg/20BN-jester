@@ -128,11 +128,20 @@ def lstm():
     return model
 
 def mobilenetonly():
-    model = MobileNetV2( weights ='imagenet', include_top = True)
-    model = Model(inputs = model.input, outputs = model.get_layer('global_average_pooling2d_1').output )
-    #model.add(Dense(12, activation='softmax'))
+    # model = MobileNetV2( weights ='imagenet', include_top = True)
+    # model = Model(inputs = model.input, outputs = model.get_layer('global_average_pooling2d_1').output )
+    # #model.add(Dense(12, activation='softmax'))
 
-    model.compile(loss='categorical_crossentropy', optimizer=Adam(), metrics=['accuracy'])
+    # model.compile(loss='categorical_crossentropy', optimizer=Adam(), metrics=['accuracy'])
+
+    model = Sequential()
+    model.add(TimeDistributed(Conv2D(32, 3, padding='same'), input_shape=(16, 64, 96, 3), name='Conv')) # shape = (frames, width, height, channel)
+    model.add(TimeDistributed(MaxPooling2D(pool_size=(2, 2), name='MaxPooling')))
+    model.add(TimeDistributed(Flatten(), name='Flatten_1'))
+    model.add(LSTM(20, return_sequences=True, name='LSTM'))
+    model.add(TimeDistributed(Dense(6, activation='linear'), name='Dense'))
+    model.add(GlobalAveragePooling1D(name='average'))
+
     return model
 
 
