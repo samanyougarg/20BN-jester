@@ -117,27 +117,23 @@ def CNN3D_lite(inp_shape, nb_classes):
     return model
 
 
-# def mobilenetonly(nb_classes):
-#     baseModel = MobileNetV2(weights ='imagenet', include_top = False, input_shape=(64, 96, 3))
+def mobilenetonly():
+    # model = MobileNetV2( weights ='imagenet', include_top = True)
+    # model = Model(inputs = model.input, outputs = model.get_layer('global_average_pooling2d_1').output )
+    # #model.add(Dense(12, activation='softmax'))
 
-#     print(baseModel.summary())
+    # model.compile(loss='categorical_crossentropy', optimizer=Adam(), metrics=['accuracy'])
 
-#     model = Sequential()
-#     model.add(baseModel)
+    model = Sequential()
+    model.add(TimeDistributed(Conv2D(32, 3, padding='same'), input_shape=(16, 64, 96, 3), name='Conv')) # shape = (frames, width, height, channel)
+    model.add(TimeDistributed(MaxPooling2D(pool_size=(2, 2), name='MaxPooling')))
+    model.add(TimeDistributed(Flatten(), name='Flatten_1'))
+    model.add(LSTM(20, return_sequences=True, name='LSTM'))
+    model.add(TimeDistributed(Dense(6, activation='linear'), name='Dense'))
+    model.add(GlobalAveragePooling1D(name='average'))
 
-#     model.add(Reshape((20,384)))
+    return model
 
-#     model.add(Lambda(lambda x: K.l2_normalize(x,axis=-1)))
-#     model.add(LSTM(512, return_sequences=False,
-#                    input_shape= (2,384),
-#                    dropout=0.5))
-#     model.add(Dense(512, activation='relu'))
-#     model.add(Dropout(0.5))
-#     model.add(Dense(nb_classes, activation='softmax'))
-
-#     print(model.summary())
-
-#     return model
 
 def lrcn(inp_shape, nb_classes):
     """Build a CNN into RNN.
