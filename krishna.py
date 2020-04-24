@@ -124,16 +124,12 @@ preprocess.add(Dropout(0.5))
 preprocess.add(Flatten())
 preprocess.add(Dense(256))
 
-print(preprocess.summary())
-
 recurrent = Sequential()
 recurrent.add(LSTM(512))
 recurrent.add(Dropout(0.25))
 recurrent.add(Dense(256))
 recurrent.add(Dropout(0.25))
 recurrent.add(Dense(NUM_CLASSES))
-
-print(recurrent.summary())
 
 model = Sequential()
 model.add(TimeDistributed(preprocess, input_shape=(MAX_LEN, IMG_DIMS[0], IMG_DIMS[1], IMG_DIMS[2])))
