@@ -124,6 +124,8 @@ preprocess.add(Dropout(0.5))
 preprocess.add(Flatten())
 preprocess.add(Dense(256))
 
+print(preprocess.summary())
+
 recurrent = Sequential()
 recurrent.add(LSTM(512))
 recurrent.add(Dropout(0.25))
@@ -131,9 +133,14 @@ recurrent.add(Dense(256))
 recurrent.add(Dropout(0.25))
 recurrent.add(Dense(NUM_CLASSES))
 
+print(recurrent.summary())
+
 model = Sequential()
 model.add(TimeDistributed(preprocess, input_shape=(MAX_LEN, IMG_DIMS[0], IMG_DIMS[1], IMG_DIMS[2])))
 model.add(recurrent)
+
+print(model.summary())
+
 model.compile(loss='categorical_crossentropy', optimizer=RMSprop(learning_rate=1e-4, rho=0.9), metrics=["acc"])
 
 filepath="/home/samygarg/hanuman/model/weights-improvement-{epoch:03d}.hdf5"
