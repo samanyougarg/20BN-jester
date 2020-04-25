@@ -43,7 +43,7 @@ integer_encoded = label_encoder.fit_transform(dfval['Action'])
 dfval['Action'] = integer_encoded
 
 # Load Model
-model = mobilenetonly()
+model = c3d_super_lite()
 
 # Fit Model
 model.fit_generator(
