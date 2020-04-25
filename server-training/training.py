@@ -45,17 +45,18 @@ dfval['Action'] = integer_encoded
 # Load Model
 model = lrcn()
 
+model_file_format_best = os.path.join('radhakrishna/model-lrcn.best.hdf5') 
+
 # Fit Model
 model.fit_generator(
  	DataGeneratorIA(dftrain,dim=(112,112),augment=True),
  	validation_data=DataGeneratorIA(dfval,dim=(112,112),augment=True),
  	verbose=1,
  	epochs=50,
- 	callbacks=[ModelCheckpoint('checkpoint_models/C3D_L2Norm_LSTM_jester_6_actions.h5',
+ 	callbacks=[ModelCheckpoint(model_file_format_best,
                                 monitor='val_loss',
                                 verbose=1,
                                 save_best_only=True,
-                                save_weights_only=True,
                                 mode='min',
                                 period=1)]
  )
