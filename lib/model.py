@@ -80,7 +80,7 @@ def CNN3D_dense(inp_shape, nb_classes, k_size=(3,3,3)):
     return model
 
 
-def CNN3D_lite(inp_shape, nb_classes):
+def RadhaKrishna(inp_shape, nb_classes):
     """
     Lite C3D Model + LSTM
     L2 Normalisation of C3D Lite Feature Vectors 
@@ -116,43 +116,5 @@ def CNN3D_lite(inp_shape, nb_classes):
     model.add(Dense(512, activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(nb_classes, activation='softmax'))
-
-    return model
-
-
-def Hanuman(inp_shape, nb_classes):
-
-    def firemodule(x, filters, name="firemodule"):
-        squeeze_filter, expand_filter1, expand_filter2 = filters
-        squeeze = Convolution3D(squeeze_filter, (1, 1, 1), activation='relu', padding='same', name=name + "/squeeze1x1x1")(x)
-        expand1 = Convolution3D(expand_filter1, (1, 1, 1), activation='relu', padding='same', name=name + "/expand1x1x1")(squeeze)
-        expand2 = Convolution3D(expand_filter2, (3, 3, 3), activation='relu', padding='same', name=name + "/expand3x3x3")(squeeze)
-        x = Concatenate(name=name)([expand1, expand2])
-        return x
-
-    img_input = Input(shape=inp_shape)
-
-    x = Convolution3D(64, kernel_size=(3, 3, 3), strides=(1, 2, 2), padding="same", activation="relu", name='conv1')(img_input)
-    x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool1', padding="valid")(x)
-
-    x = firemodule(x, (64, 16, 16), name="fire2")
-    x = firemodule(x, (64, 16, 16), name="fire3")
-
-    x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool3', padding="valid")(x)
-    x = firemodule(x, (128, 32, 32), name="fire4")
-    x = firemodule(x, (256, 32, 32), name="fire5")
-    x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool5', padding="valid")(x)
-    x = firemodule(x, (256, 48, 48), name="fire6")
-    x = firemodule(x, (384, 48, 48), name="fire7")
-    x = firemodule(x, (384, 64, 64), name="fire8")
-    x = firemodule(x, (512, 64, 64), name="fire9")
-
-    x = GlobalMaxPooling3D(name="maxpool10")(x)
-    x = Dense(nb_classes, init='normal')(x)
-    x = Activation('softmax')(x)
-
-    model = Model(img_input, x)
-
-    print(model.summary())
 
     return model
