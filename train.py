@@ -75,10 +75,10 @@ def main(args):
     #             loss="categorical_crossentropy",
     #             metrics=["accuracy", "top_k_categorical_accuracy"]) 
 
-    net = model.mobilenetonly()
+    net = model.Hanuman(inp_shape=inp_shape, nb_classes=nb_classes)
     net.compile(optimizer="adam",
                 loss="categorical_crossentropy",
-                metrics=["accuracy"]) 
+                metrics=["accuracy", "top_k_categorical_accuracy"])
 
     # if model weights file is present
     # load the model weights

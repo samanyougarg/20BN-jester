@@ -14,6 +14,8 @@ from keras.layers.convolutional import (Conv2D, MaxPooling2D)
 from keras import backend as K
 from keras.applications.mobilenet_v2 import MobileNetV2
 from keras.applications.mobilenet import MobileNet
+from keras.layers import Convolution3D, MaxPooling3D, AveragePooling3D
+from keras.layers import GlobalMaxPooling3D, GlobalAveragePooling3D
 
 
 def CNN3D(inp_shape, nb_classes, k_size=(3,3,3), drop_rate=0):
@@ -185,6 +187,44 @@ def lrcn(inp_shape, nb_classes):
     model.add(Dropout(0.5))
     model.add(LSTM(256, return_sequences=False, dropout=0.5))
     model.add(Dense(nb_classes, activation='softmax'))
+
+    print(model.summary())
+
+    return model
+
+
+def Hanuman(inp_shape, nb_classes):
+
+    def firemodule(x, filters, name="firemodule"):
+        squeeze_filter, expand_filter1, expand_filter2 = filters
+        squeeze = Convolution3D(squeeze_filter, (1, 1, 1), activation='relu', padding='same', name=name + "/squeeze1x1x1")(x)
+        expand1 = Convolution3D(expand_filter1, (1, 1, 1), activation='relu', padding='same', name=name + "/expand1x1x1")(squeeze)
+        expand2 = Convolution3D(expand_filter2, (3, 3, 3), activation='relu', padding='same', name=name + "/expand3x3x3")(squeeze)
+        x = Concatenate(axis=-1, name=name)([expand1, expand2])
+        return x
+
+    img_input = Input(shape=inp_shape)
+
+    x = Convolution3D(64, kernel_size=(3, 3, 3), strides=(2, 2, 2), padding="same", activation="relu", name='conv1')(img_input)
+    x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool1', padding="valid")(x)
+
+    x = firemodule(x, (16, 64, 64), name="fire2")
+    x = firemodule(x, (16, 64, 64), name="fire3")
+
+    x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool3', padding="valid")(x)
+    x = firemodule(x, (32, 128, 128), name="fire4")
+    x = firemodule(x, (32, 128, 128), name="fire5")
+    x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool5', padding="valid")(x)
+    x = firemodule(x, (48, 192, 192), name="fire6")
+    x = firemodule(x, (48, 192, 192), name="fire7")
+    x = firemodule(x, (64, 256, 256), name="fire8")
+    x = firemodule(x, (64, 256, 256), name="fire9")
+
+    x = GlobalMaxPooling3D(name="maxpool10")(x)
+    x = Dense(nb_classes, init='normal')(x)
+    x = Activation('softmax')(x)
+
+    model = Model(img_input, x)
 
     print(model.summary())
 
