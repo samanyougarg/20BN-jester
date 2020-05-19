@@ -132,20 +132,20 @@ def Hanuman(inp_shape, nb_classes):
 
     img_input = Input(shape=inp_shape)
 
-    x = Convolution3D(64, kernel_size=(3, 3, 3), strides=(2, 2, 2), padding="same", activation="relu", name='conv1')(img_input)
+    x = Convolution3D(32, kernel_size=(3, 3, 3), strides=(2, 2, 2), padding="same", activation="relu", name='conv1')(img_input)
     x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool1', padding="valid")(x)
 
-    x = firemodule(x, (16, 64, 64), name="fire2")
-    x = firemodule(x, (16, 64, 64), name="fire3")
+    x = firemodule(x, (16, 32, 32), name="fire2")
+    x = firemodule(x, (16, 32, 32), name="fire3")
 
     x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool3', padding="valid")(x)
-    x = firemodule(x, (32, 128, 128), name="fire4")
-    x = firemodule(x, (32, 128, 128), name="fire5")
+    x = firemodule(x, (16, 64, 64), name="fire4")
+    x = firemodule(x, (16, 64, 64), name="fire5")
     x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool5', padding="valid")(x)
-    x = firemodule(x, (48, 192, 192), name="fire6")
-    x = firemodule(x, (48, 192, 192), name="fire7")
-    x = firemodule(x, (64, 256, 256), name="fire8")
-    x = firemodule(x, (64, 256, 256), name="fire9")
+    x = firemodule(x, (32, 96, 96), name="fire6")
+    x = firemodule(x, (32, 96, 96), name="fire7")
+    x = firemodule(x, (32, 128, 128), name="fire8")
+    x = firemodule(x, (32, 128, 128), name="fire9")
 
     x = GlobalMaxPooling3D(name="maxpool10")(x)
     x = Dense(nb_classes, init='normal')(x)
