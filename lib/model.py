@@ -196,6 +196,8 @@ def lrcn(inp_shape, nb_classes):
 
 def Hanuman(inp_shape, nb_classes):
 
+    K.set_image_dim_ordering('th')
+    
     def firemodule(x, filters, name="firemodule"):
         squeeze_filter, expand_filter1, expand_filter2 = filters
         squeeze = Convolution3D(squeeze_filter, (1, 1, 1), activation='relu', padding='same', name=name + "/squeeze1x1x1")(x)
@@ -213,13 +215,13 @@ def Hanuman(inp_shape, nb_classes):
     x = firemodule(x, (16, 64, 64), name="fire3")
 
     x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool3', padding="valid")(x)
-    x = firemodule(x, (128, 128, 32), name="fire4")
-    x = firemodule(x, (128, 128, 32), name="fire5")
+    x = firemodule(x, (32, 128, 128), name="fire4")
+    x = firemodule(x, (32, 128, 128), name="fire5")
     x = MaxPooling3D(pool_size=(3, 3, 3), strides=(2, 2, 2), name='maxpool5', padding="valid")(x)
-    x = firemodule(x, (192, 192, 48), name="fire6")
-    x = firemodule(x, (192, 192, 48), name="fire7")
-    x = firemodule(x, (256, 256, 64), name="fire8")
-    x = firemodule(x, (256, 256, 64), name="fire9")
+    x = firemodule(x, (48, 192, 192), name="fire6")
+    x = firemodule(x, (48, 192, 192), name="fire7")
+    x = firemodule(x, (64, 256, 256), name="fire8")
+    x = firemodule(x, (64, 256, 256), name="fire9")
 
     x = GlobalMaxPooling3D(name="maxpool10")(x)
     x = Dense(nb_classes, init='normal')(x)
