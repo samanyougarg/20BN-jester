@@ -120,90 +120,14 @@ def CNN3D_lite(inp_shape, nb_classes):
     return model
 
 
-def mobilenetonly():
-    # model = MobileNetV2( weights ='imagenet', include_top = True)
-    # model = Model(inputs = model.input, outputs = model.get_layer('global_average_pooling2d_1').output )
-    # #model.add(Dense(12, activation='softmax'))
-
-    # model.compile(loss='categorical_crossentropy', optimizer=Adam(), metrics=['accuracy'])
-
-    model = Sequential()
-    model.add(TimeDistributed(Conv2D(32, 3, padding='same'), input_shape=(16, 64, 96, 3), name='Conv')) # shape = (frames, width, height, channel)
-    model.add(TimeDistributed(MaxPooling2D(pool_size=(2, 2), name='MaxPooling')))
-    model.add(TimeDistributed(Flatten(), name='Flatten_1'))
-    model.add(LSTM(20, return_sequences=True, name='LSTM'))
-    model.add(TimeDistributed(Dense(6, activation='linear'), name='Dense'))
-    model.add(GlobalAveragePooling1D(name='average'))
-
-    return model
-
-
-def lrcn(inp_shape, nb_classes):
-    """Build a CNN into RNN.
-    Starting version from:
-        https://github.com/udacity/self-driving-car/blob/master/
-            steering-models/community-models/chauffeur/models.py
-    Heavily influenced by VGG-16:
-        https://arxiv.org/abs/1409.1556
-    Also known as an LRCN:
-        https://arxiv.org/pdf/1411.4389.pdf
-    """
-    print(inp_shape)
-    model = Sequential()
-
-    model.add(InputLayer(input_shape=inp_shape))
-
-    model.add(TimeDistributed(Conv2D(32, (7, 7), strides=(2, 2),
-        activation='relu', padding='same')))
-    model.add(TimeDistributed(Conv2D(32, (3,3),
-        kernel_initializer="he_normal", activation='relu')))
-    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
-
-    model.add(TimeDistributed(Conv2D(64, (3,3),
-        padding='same', activation='relu')))
-    model.add(TimeDistributed(Conv2D(64, (3,3),
-        padding='same', activation='relu')))
-    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
-
-    model.add(TimeDistributed(Conv2D(128, (3,3),
-        padding='same', activation='relu')))
-    model.add(TimeDistributed(Conv2D(128, (3,3),
-        padding='same', activation='relu')))
-    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
-
-    model.add(TimeDistributed(Conv2D(256, (3,3),
-        padding='same', activation='relu')))
-    model.add(TimeDistributed(Conv2D(256, (3,3),
-        padding='same', activation='relu')))
-    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
-
-    model.add(TimeDistributed(Conv2D(512, (3,3),
-        padding='same', activation='relu')))
-    model.add(TimeDistributed(Conv2D(512, (3,3),
-        padding='same', activation='relu')))
-    model.add(TimeDistributed(MaxPooling2D((2, 2), strides=(2, 2))))
-
-    model.add(TimeDistributed(Flatten()))
-
-    model.add(Dropout(0.5))
-    model.add(LSTM(256, return_sequences=False, dropout=0.5))
-    model.add(Dense(nb_classes, activation='softmax'))
-
-    print(model.summary())
-
-    return model
-
-
 def Hanuman(inp_shape, nb_classes):
 
-    K.set_image_dim_ordering('th')
-    
     def firemodule(x, filters, name="firemodule"):
         squeeze_filter, expand_filter1, expand_filter2 = filters
         squeeze = Convolution3D(squeeze_filter, (1, 1, 1), activation='relu', padding='same', name=name + "/squeeze1x1x1")(x)
         expand1 = Convolution3D(expand_filter1, (1, 1, 1), activation='relu', padding='same', name=name + "/expand1x1x1")(squeeze)
         expand2 = Convolution3D(expand_filter2, (3, 3, 3), activation='relu', padding='same', name=name + "/expand3x3x3")(squeeze)
-        x = Concatenate(axis=-1, name=name)([expand1, expand2])
+        x = Concatenate(name=name)([expand1, expand2])
         return x
 
     img_input = Input(shape=inp_shape)
