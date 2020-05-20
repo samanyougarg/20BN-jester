@@ -4,6 +4,7 @@ from tensorflow.keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3
      Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed
 from tensorflow.keras import backend as K
 from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
+from tensorflow.keras.models import Sequential
 import tensorflow as tf
 # from keras import Sequential
 # from keras.models import Model
