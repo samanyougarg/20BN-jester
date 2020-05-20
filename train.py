@@ -82,10 +82,11 @@ def main(args):
         net.load_weights(path_weights)
 
     # file format for saving the best model
-    model_file_format_best = os.path.join(path_model,'model.best.hdf5') 
+    model_file_format_best = os.path.join(path_model,'radhakrishna.hdf5') 
 
     # checkpoint the best model
-    checkpointer_best = ModelCheckpoint(model_file_format_best, monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
+    # checkpointer_best = ModelCheckpoint(model_file_format_best, monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
+    checkpointer_best = ModelCheckpoint(filepath=os.path.join(path_model, 'model.{epoch:02d}-{val_loss:.2f}.h5'), monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
 
     # get the number of samples in the training and validation set
     nb_sample_train = data.train_df["video_id"].size
