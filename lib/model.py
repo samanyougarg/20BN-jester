@@ -1,18 +1,17 @@
-import tensorflow as tf
-from tensorflow.keras.models import Model
-from tensorflow.keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
-     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed
-from tensorflow.keras import backend as K
-from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
-from tensorflow.keras.models import Sequential
-import tensorflow as tf
-# from keras import Sequential
-# from keras.models import Model
-# from keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D, GlobalAveragePooling1D, \
-#      Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed, concatenate
-# from keras.layers.wrappers import TimeDistributed
-# from keras.layers.convolutional import (Conv2D, MaxPooling2D)
-# from keras import backend as K
+# import tensorflow as tf
+# from tensorflow.keras.models import Model
+# from tensorflow.keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D,\
+#      Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed
+# from tensorflow.keras import backend as K
+# from tensorflow.keras.applications.mobilenet_v2 import MobileNetV2
+# import tensorflow as tf
+from keras import Sequential
+from keras.models import Model
+from keras.layers import Input, Conv3D, MaxPooling3D, AveragePooling3D, GlobalAveragePooling1D, \
+     Flatten, Dense, Dropout, Activation, BatchNormalization, Reshape, Lambda, LSTM, InputLayer, GlobalAveragePooling2D, CuDNNLSTM, TimeDistributed, concatenate
+from keras.layers.wrappers import TimeDistributed
+from keras.layers.convolutional import (Conv2D, MaxPooling2D)
+from keras import backend as K
 
 
 def CNN3D(inp_shape, nb_classes, k_size=(3,3,3), drop_rate=0):
