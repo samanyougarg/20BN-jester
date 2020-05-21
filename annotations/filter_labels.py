@@ -22,9 +22,12 @@ targets_name = [
     "Swiping Right",
     "No gesture",
     "Thumb Up",
-    "Turning Hand Clockwise",
-    "Turning Hand Counterclockwise",
+    "Zooming In With Two Fingers",
+    "Zooming Out With Two Fingers",
     "Shaking Hand",
+    "Drumming Fingers",
+    "Swiping Up",
+    "Swiping Down",
     ]
 
 # only keep labels that are present in the targets_name list
@@ -37,6 +40,6 @@ print("Validation Filtered size: " + str(validation_labels_filtered.size))
 print("Labels Filtered size: " + str(labels_filtered.size))
 
 # save our filtered dataframes as csv files
-training_labels_filtered.to_csv('jester-v1-train-filtered.csv',header=False,sep=";",index=False)
-validation_labels_filtered.to_csv('jester-v1-validation-filtered.csv',header=False,sep=";",index=False)
-labels_filtered.to_csv('jester-v1-labels-filtered.csv',header=False,sep=";",index=False)
+training_labels_filtered.to_csv('jester-12-train.csv',header=False,sep=";",index=False)
+validation_labels_filtered.to_csv('jester-12-validation.csv',header=False,sep=";",index=False)
+labels_filtered.to_csv('jester-12-labels.csv',header=False,sep=";",index=False)
