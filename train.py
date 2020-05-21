@@ -12,7 +12,7 @@ from lib.utils import mkdirs
 import lib.model as model
 from lib.model_res import Resnet3DBuilder
 
-from keras.callbacks import ModelCheckpoint
+from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.optimizers import SGD, Adam
 
 def main(args):
@@ -87,6 +87,7 @@ def main(args):
     # checkpoint the best model
     # checkpointer_best = ModelCheckpoint(model_file_format_best, monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
     checkpointer_best = ModelCheckpoint(filepath=os.path.join(path_model, 'model.{epoch:02d}-{val_loss:.2f}.h5'), monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
+    es = EarlyStopping(monitor='val_loss', mode='min', verbose=1)
 
     # get the number of samples in the training and validation set
     nb_sample_train = data.train_df["video_id"].size
@@ -104,7 +105,7 @@ def main(args):
             workers=workers,
             max_queue_size=max_queue_size,
             use_multiprocessing=use_multiprocessing,
-            callbacks=[checkpointer_best],
+            callbacks=[checkpointer_best, es],
     )
 
     # after training serialize the final model to JSON
