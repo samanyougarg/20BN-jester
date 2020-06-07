@@ -82,12 +82,21 @@ def main(args):
         net.load_weights(path_weights)
 
     # file format for saving the best model
-    model_file_format_best = os.path.join(path_model,'radhakrishna.hdf5') 
+    # model_file_format_best = os.path.join(path_model,'radhakrishna.hdf5') 
+    # save checkpoint
+    checkpoint_path = "training_1/cp.ckpt"
+    checkpoint_dir = os.path.dirname(checkpoint_path)
 
     # checkpoint the best model
     # checkpointer_best = ModelCheckpoint(model_file_format_best, monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
-    checkpointer_best = ModelCheckpoint(filepath=os.path.join(path_model, 'model.{epoch:02d}-{val_loss:.2f}.h5'), monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
+    # checkpointer_best = ModelCheckpoint(filepath=os.path.join(path_model, 'model.{epoch:02d}-{val_loss:.2f}.h5'), monitor='val_accuracy',verbose=1, save_best_only=True, mode='max')
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1)
+
+    # Create a callback that saves the model's weights
+    cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+                                                 monitor='val_accuracy',
+                                                 save_weights_only=True,
+                                                 verbose=1)
 
     # get the number of samples in the training and validation set
     nb_sample_train = data.train_df["video_id"].size
@@ -105,9 +114,10 @@ def main(args):
             workers=workers,
             max_queue_size=max_queue_size,
             use_multiprocessing=use_multiprocessing,
-            callbacks=[checkpointer_best, es],
+            callbacks=[cp_callback, es],
     )
 
+    model.save_weights('./checkpoints/radhakrishna')
     # after training serialize the final model to JSON
     model_json = net.to_json()
     with open(model_name + ".json", "w") as json_file:
