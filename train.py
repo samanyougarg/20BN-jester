@@ -93,7 +93,7 @@ def main(args):
     es = EarlyStopping(monitor='val_loss', mode='min', verbose=1)
 
     # Create a callback that saves the model's weights
-    cp_callback = tf.keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
+    cp_callback = keras.callbacks.ModelCheckpoint(filepath=checkpoint_path,
                                                  monitor='val_accuracy',
                                                  save_weights_only=True,
                                                  verbose=1)
