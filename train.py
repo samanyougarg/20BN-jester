@@ -11,7 +11,7 @@ from lib.data_loader import DataLoader
 from lib.utils import mkdirs
 import lib.model as model
 from lib.model_res import Resnet3DBuilder
-
+import keras
 from keras.callbacks import ModelCheckpoint, EarlyStopping
 from keras.optimizers import SGD, Adam
 
